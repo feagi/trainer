@@ -249,6 +249,7 @@ if __name__ == "__main__":
                         flask_server.latest_static = img_coords.update_image_ids(new_image_id=None,
                                                                                  new_feagi_image_id=feagi_image_id,
                                                                                  static=flask_server.latest_static)
+                    print(message_from_feagi['opu_data'])
 
                         # Show user image currently sent to FEAGI, with a bounding box showing FEAGI's location data if it exists
                     location_data = pns.recognize_location_data(message_from_feagi)
@@ -311,7 +312,7 @@ if __name__ == "__main__":
                     if start_timer == 0.0:
                         start_timer = datetime.now()
 
-
+                    frame = []
                     while cap.isOpened():
                         message_from_feagi = pns.message_from_feagi
                         ret, raw_frame = cap.read()
@@ -325,7 +326,10 @@ if __name__ == "__main__":
                                 break
                         camera_data["vision"] = raw_frame
                         # Update the latest image data for Flask server to display
-                        flask_server.latest_raw_image = raw_frame
+                        if image_reader_config["test_mode"] and len(frame) > 0:
+                            flask_server.latest_raw_image = cv2.resize(frame, [384, 240])
+                        else:
+                            flask_server.latest_raw_image = raw_frame
                         flask_server.latest_static.raw_image_dimensions = (f"{raw_frame.shape[1]} x {raw_frame.shape[0]}")
                         flask_server.latest_static = img_coords.update_image_ids(new_image_id=image_id,
                                                                                  new_feagi_image_id=None,
@@ -363,6 +367,47 @@ if __name__ == "__main__":
                                     new_feagi_image_id=feagi_image_id,
                                     static=flask_server.latest_static,
                                 )
+                            # empty_frame = np.zeros([64, 64], dtype=np.uint8)
+                            # feagi_processed_frame = retina.update_astype(empty_frame)
+                            # for key in message_from_feagi['opu_data']['ov_out']:
+                            #     feagi_processed_frame[key[0], key[1]] = message_from_feagi['opu_data']['ov_out'][key]
+                            # print(message_from_feagi['opu_data']['ov_out'])
+
+                            for coord in message_from_feagi['opu_data']['ov_out']:
+                                raw_frame[int((coord[0] * 600)/96), int((coord[1] * 960)/64)] = 150
+                                raw_frame[int((coord[0] * 600) / 96)+1, int((coord[1] * 960) / 64)] = 150
+                                raw_frame[int((coord[0] * 600) / 96), int((coord[1] * 960) / 64)+1] = 150
+                                raw_frame[int((coord[0] * 600) / 96)+2, int((coord[1] * 960) / 64)] = 150
+                                raw_frame[int((coord[0] * 600) / 96)+2, int((coord[1] * 960) / 64)+1] = 150
+
+
+                            # frame = np.zeros([96, 64], dtype=np.uint8)
+                            # frame.fill(255)
+
+
+                            # first attempt
+                            # coords = np.array(list(message_from_feagi['opu_data']['ov_out'].keys())).reshape(-1, 3)
+                            # # coords = cv2.resize(coords, [raw_frame.shape])
+                            # x_coords = coords[:, 0].astype(int)
+                            # y_coords = coords[:, 1].astype(int)
+                            # raw_frame[x_coords, y_coords] = 1
+
+                            # attempt second
+                            # coords = np.array(list(message_from_feagi['opu_data']['ov_out'].keys())).reshape(-1, 3)
+                            # x_scale = 600 / 64
+                            # y_scale = 960 / 64
+                            # x_coords = (coords[:, 0] * x_scale).astype(int)
+                            # y_coords = (coords[:, 1] * y_scale).astype(int)
+                            # x_coords = np.clip(x_coords, 0, 599)
+                            # y_coords = np.clip(y_coords, 0, 959)
+                            # raw_frame[x_coords, y_coords] = 1
+
+
+                            # cv2.imshow('Frame', frame)
+                            # # Press Q on keyboard to exit
+                            # if cv2.waitKey(1) & 0xFF == ord('q'):
+                            #     break
+
 
                         # Process current image sent to FEAGI with bounding box
                         location_data = pns.recognize_location_data(message_from_feagi)
