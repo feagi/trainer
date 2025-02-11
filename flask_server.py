@@ -160,6 +160,11 @@ def index():
                             <label for="test_mode">Test Mode:</label>
                             <input type="checkbox" id="test_mode" name="test_mode" {{ test_mode }}>
                         </div>
+                        
+                        <div class="form-group">
+                            <label for="show_feagi_reading">Show_feagi_reading:</label>
+                            <input type="checkbox" id="show_feagi_reading" name="show_feagi_reading" {{ show_feagi_reading }}>
+                        </div>
 
                         <button type="submit" id="settings-button" style="margin-top: 10px">Apply Changes</button>
                     </form>
@@ -264,6 +269,7 @@ def index():
                         image_path: formData.get('image_path'),
                         loop: formData.get('loop') === 'on',
                         test_mode: formData.get('test_mode') === 'on', 
+                        show_feagi_reading: formData.get('show_feagi_reading') === 'on', 
                     };
 
                     if (!feagiControlled) {
@@ -345,6 +351,7 @@ def index():
         image_path=latest_static.image_path or "",
         loop="checked" if latest_static.loop else "",
         test_mode="checked" if latest_static.test_mode else "",
+        show_feagi_reading="checked" if latest_static.show_feagi_reading else "",
     )
 
 

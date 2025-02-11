@@ -18,6 +18,7 @@ class LatestStatic(BaseModel):
     image_path: Optional[str] = None
     test_mode: Optional[bool] = None
     image_gap_duration: Optional[float] = None
+    show_feagi_reading: Optional[bool] = None
 
 
 empty_latest_static = LatestStatic(
@@ -36,4 +37,5 @@ empty_latest_static = LatestStatic(
     loop=None,
     image_path=None,
     test_mode=None,
+    show_feagi_reading=None
 )

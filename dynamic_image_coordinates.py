@@ -51,4 +51,5 @@ def update_image_ids(new_image_id=None, new_feagi_image_id=None, static=None):
         image_path=static.image_path,
         test_mode=static.test_mode,
         image_gap_duration=static.image_gap_duration,
+        show_feagi_reading=static.show_feagi_reading
     )
