@@ -30,6 +30,7 @@ import dynamic_image_coordinates as img_coords
 from feagi_connector.version import __version__
 from feagi_connector import feagi_interface as feagi
 from feagi_connector import trainer as feagi_trainer
+import extra_functions
 
 config = feagi.build_up_from_configuration()
 capabilities = config["capabilities"].copy()
@@ -38,8 +39,6 @@ configuration = json.load(fcap)
 fcap.close()
 image_reader_config = configuration["image_reader"]["0"]
 feagi.validate_requirements('requirements.txt')  # you should get it from the boilerplate generator
-
-
 
 # Start Flask server
 def run_app():
@@ -295,8 +294,7 @@ if __name__ == "__main__":
             # Previous design
         # while continue_loop:
             # Iterate through images
-            image_obj = feagi_trainer.scan_the_folder(
-                configuration['image_reader']['0']['image_path'])
+            image_obj = feagi_trainer.scan_the_folder(configuration['image_reader']['0']['image_path'])
             for image in image_obj:
                 name_id = image[1]
                 image_id = key = next(iter(name_id))
@@ -339,6 +337,7 @@ if __name__ == "__main__":
                         image_reader_config["image_display_duration"] = (latest_vals.image_display_duration)
                         image_reader_config["test_mode"] = latest_vals.test_mode
                         image_reader_config["image_gap_duration"] = (latest_vals.image_gap_duration)
+                        image_reader_config['show_feagi_reading'] = latest_vals.show_feagi_reading
                         # image_reader_config["feagi_controlled"] = latest_vals.feagi_controlled # this is fraud AI. we dont do it here
                         if latest_vals.feagi_controlled:
                             break
@@ -373,42 +372,12 @@ if __name__ == "__main__":
                             #     feagi_processed_frame[key[0], key[1]] = message_from_feagi['opu_data']['ov_out'][key]
                             # print(message_from_feagi['opu_data']['ov_out'])
 
-                            for coord in message_from_feagi['opu_data']['ov_out']:
-                                raw_frame[int((coord[0] * 600)/96), int((coord[1] * 960)/64)] = 150
-                                raw_frame[int((coord[0] * 600) / 96)+1, int((coord[1] * 960) / 64)] = 150
-                                raw_frame[int((coord[0] * 600) / 96), int((coord[1] * 960) / 64)+1] = 150
-                                raw_frame[int((coord[0] * 600) / 96)+2, int((coord[1] * 960) / 64)] = 150
-                                raw_frame[int((coord[0] * 600) / 96)+2, int((coord[1] * 960) / 64)+1] = 150
-
-
-                            # frame = np.zeros([96, 64], dtype=np.uint8)
-                            # frame.fill(255)
-
-
-                            # first attempt
-                            # coords = np.array(list(message_from_feagi['opu_data']['ov_out'].keys())).reshape(-1, 3)
-                            # # coords = cv2.resize(coords, [raw_frame.shape])
-                            # x_coords = coords[:, 0].astype(int)
-                            # y_coords = coords[:, 1].astype(int)
-                            # raw_frame[x_coords, y_coords] = 1
-
-                            # attempt second
-                            # coords = np.array(list(message_from_feagi['opu_data']['ov_out'].keys())).reshape(-1, 3)
-                            # x_scale = 600 / 64
-                            # y_scale = 960 / 64
-                            # x_coords = (coords[:, 0] * x_scale).astype(int)
-                            # y_coords = (coords[:, 1] * y_scale).astype(int)
-                            # x_coords = np.clip(x_coords, 0, 599)
-                            # y_coords = np.clip(y_coords, 0, 959)
-                            # raw_frame[x_coords, y_coords] = 1
-
-
-                            # cv2.imshow('Frame', frame)
-                            # # Press Q on keyboard to exit
-                            # if cv2.waitKey(1) & 0xFF == ord('q'):
-                            #     break
-
-
+                            if image_reader_config['show_feagi_reading']:
+                                for coord in message_from_feagi['opu_data']['ov_out']:
+                                    adjusted_y = coord[1] * -1 + 64
+                                    expanded_pixel =  extra_functions.expand_pixel(int((coord[0] * 960) / 96), int((adjusted_y * 600) / 64), 10, 960, 600)
+                                    for coord_of_expanded in expanded_pixel:
+                                        raw_frame[coord_of_expanded[1], coord_of_expanded[0]] = [255, 19, 240]
                         # Process current image sent to FEAGI with bounding box
                         location_data = pns.recognize_location_data(message_from_feagi)
                         if pns.full_list_dimension:
