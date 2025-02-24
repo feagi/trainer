@@ -33,6 +33,7 @@ from feagi_connector import trainer as feagi_trainer
 import extra_functions
 from color_map import z_to_color
 import numpy as np
+from fractions import Fraction
 
 config = feagi.build_up_from_configuration()
 capabilities = config["capabilities"].copy()
@@ -197,6 +198,7 @@ if __name__ == "__main__":
                         # Show user image currently sent to FEAGI, with a bounding box showing FEAGI's location data if it exists
                         location_data = pns.recognize_location_data(message_from_feagi)
                         if previous_frame_data:
+                            print(flask_server.latest_static.image_dimensions)
                             flask_server.latest_static.image_dimensions = f"{modified_data['00_C'].shape[1]} x {modified_data['00_C'].shape[0]}"
                             new_image_id = getattr(flask_server.latest_static, "image_id", "")
                             feagi_image_id = getattr(flask_server.latest_static, "feagi_image_id", "")
@@ -333,8 +335,7 @@ if __name__ == "__main__":
                             flask_server.latest_raw_image = cv2.resize(frame, [384, 240])
                         else:
                             flask_server.latest_raw_image = raw_frame
-                        flask_server.latest_static.raw_image_dimensions = (
-                            f"{raw_frame.shape[1]} x {raw_frame.shape[0]}")
+                        flask_server.latest_static.raw_image_dimensions = (f"{raw_frame.shape[1]} x {raw_frame.shape[0]}")
                         flask_server.latest_static = img_coords.update_image_ids(new_image_id=image_id,
                                                                                  new_feagi_image_id=None,
                                                                                  static=flask_server.latest_static)
@@ -344,6 +345,8 @@ if __name__ == "__main__":
                         image_reader_config["test_mode"] = latest_vals.test_mode
                         image_reader_config["image_gap_duration"] = (latest_vals.image_gap_duration)
                         image_reader_config['show_feagi_reading'] = latest_vals.show_feagi_reading
+                        aspect_data = str(Fraction(raw_frame.shape[0]/raw_frame.shape[1])).split('/')
+                        flask_server.latest_static.aspect_ratio = "ASPECT RATIO: " + str(aspect_data[1]) + "/" + str(aspect_data[0])
                         # image_reader_config["feagi_controlled"] = latest_vals.feagi_controlled # this is fraud AI. we dont do it here
                         if latest_vals.feagi_controlled:
                             break
