@@ -381,13 +381,14 @@ if __name__ == "__main__":
                             if image_reader_config['show_feagi_reading']:
                                 if 'ov_out' in message_from_feagi['opu_data']:
                                     original_frame_size = raw_frame.shape
-                                    test = np.array(list(message_from_feagi['opu_data']['ov_out']))
-                                    if test.ndim == 1:
-                                        test = test.reshape(-1, 2)
-                                    test[:, 0] = (test[:, 0] * original_frame_size[1]) / pns.full_list_dimension['ov_out']['cortical_dimensions'][0]
-                                    test[:, 1] = test[:, 1] * -1 + pns.full_list_dimension['ov_out']['cortical_dimensions'][1]
-                                    test[:, 1] = ((test[:, 1] * original_frame_size[0]) / pns.full_list_dimension['ov_out']['cortical_dimensions'][1]).astype(int)
-                                    expanded_coords = extra_functions.expand_pixel(test, 10,
+                                    converted_array = np.array(list(message_from_feagi['opu_data']['ov_out']))
+                                    if converted_array.ndim == 1:
+                                        converted_array = converted_array.reshape(-1, 2)
+                                    converted_array[:, 0] = converted_array[:, 0] + 0.3
+                                    converted_array[:, 0] = (converted_array[:, 0] * original_frame_size[1]) / pns.full_list_dimension['ov_out']['cortical_dimensions'][0]
+                                    converted_array[:, 1] = converted_array[:, 1] * -1 + pns.full_list_dimension['ov_out']['cortical_dimensions'][1]
+                                    converted_array[:, 1] = ((converted_array[:, 1] * original_frame_size[0]) / pns.full_list_dimension['ov_out']['cortical_dimensions'][1]).astype(int)
+                                    expanded_coords = extra_functions.expand_pixel(converted_array, 10,
                                                                                    original_frame_size[1],
                                                                                    original_frame_size[0])
                                     x = np.clip(expanded_coords[:, 0], 0, original_frame_size[1] - 1).astype(int)
