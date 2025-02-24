@@ -12,8 +12,8 @@ def expand_pixel(xyz_array, radius, width, height):
         height: int, maximum height of the image
     """
     # Create the offset ranges
-    x_offsets = np.arange(-radius, radius + 1)
-    y_offsets = np.arange(-radius, radius + 1)
+    x_offsets = np.arange(-radius, radius)
+    y_offsets = np.arange(-radius, radius)
 
     # Create meshgrid of offsets
     xx, yy = np.meshgrid(x_offsets, y_offsets)
@@ -26,8 +26,8 @@ def expand_pixel(xyz_array, radius, width, height):
     new_coords = expanded[:, :, :2] + offsets[np.newaxis, :, :]  # Add offsets to x,y coordinates
 
     # Clip to image boundaries
-    new_coords[:, :, 0] = np.clip(new_coords[:, :, 0], 0, width - 1)
-    new_coords[:, :, 1] = np.clip(new_coords[:, :, 1], 0, height - 1)
+    new_coords[:, :, 0] = np.clip(new_coords[:, :, 0], 0, width) + 10
+    new_coords[:, :, 1] = np.clip(new_coords[:, :, 1], 0, height)
 
     # If there's a third column (e.g., intensity), repeat it for all expanded pixels
     if xyz_array.shape[1] > 2:
