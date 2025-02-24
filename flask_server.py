@@ -117,8 +117,8 @@ def index():
             </style>
         </head>
         <body>
-            <h1 style="text-align: center; color: lightgrey;">FEAGI Trainer {{ aspect_ratio_calculator }}</h1>
-            <h1 style="text-align: center; color: lightgrey;"><span id="aspect_ratio_calculator">{{ aspect_ratio_calculator }}</span></h1>
+            <h1 style="text-align: center; color: lightgrey;">FEAGI Trainer</h1>
+            <p1 style="text-align: center; color: lightgrey; height: 40px;"><span id="aspect_ratio_calculator">{{ aspect_ratio_calculator }}</span></p1>
             <div style="display: flex; gap: 20px;">
                 <div class="stats-inputs-parent">
                     <div class="stats-container info-container">
