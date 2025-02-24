@@ -32,6 +32,7 @@ from feagi_connector import feagi_interface as feagi
 from feagi_connector import trainer as feagi_trainer
 import extra_functions
 from color_map import z_to_color
+import numpy as np
 
 config = feagi.build_up_from_configuration()
 capabilities = config["capabilities"].copy()
@@ -378,22 +379,18 @@ if __name__ == "__main__":
                             if image_reader_config['show_feagi_reading']:
                                 if 'ov_out' in message_from_feagi['opu_data']:
                                     original_frame_size = raw_frame.shape
-                                    for coord in message_from_feagi['opu_data']['ov_out']:
-                                        adjusted_y = coord[1] * -1 + \
-                                                     pns.full_list_dimension['ov_out']['cortical_dimensions'][1]
-                                        expanded_pixel = extra_functions.expand_pixel(
-                                            int((coord[0] * original_frame_size[1]) /
-                                                pns.full_list_dimension['ov_out']['cortical_dimensions'][0]),
-                                            int((adjusted_y * original_frame_size[0]) /
-                                                pns.full_list_dimension['ov_out']['cortical_dimensions'][1]), 10,
-                                            original_frame_size[1], original_frame_size[0])
-                                        for coord_of_expanded in expanded_pixel:
-                                            # color = [255, 19, 240] # neon pink
-                                            if coord[2] in z_to_color:
-                                                color = z_to_color[coord[2]]
-                                            else:
-                                                color = [255, 255, 255]  # When it's not available in the map, it will be solid white
-                                            raw_frame[coord_of_expanded[1], coord_of_expanded[0]] = color
+                                    test = np.array(list(message_from_feagi['opu_data']['ov_out']))
+                                    if test.ndim == 1:
+                                        test = test.reshape(-1, 2)
+                                    test[:, 0] = (test[:, 0] * original_frame_size[1]) / pns.full_list_dimension['ov_out']['cortical_dimensions'][0]
+                                    test[:, 1] = test[:, 1] * -1 + pns.full_list_dimension['ov_out']['cortical_dimensions'][1]
+                                    test[:, 1] = ((test[:, 1] * original_frame_size[0]) / pns.full_list_dimension['ov_out']['cortical_dimensions'][1]).astype(int)
+                                    expanded_coords = extra_functions.expand_pixel(test, 10,
+                                                                                   original_frame_size[1],
+                                                                                   original_frame_size[0])
+                                    x = np.clip(expanded_coords[:, 0], 0, original_frame_size[1] - 1).astype(int)
+                                    y = np.clip(expanded_coords[:, 1], 0, original_frame_size[0] - 1).astype(int)
+                                    raw_frame[y, x] = [255, 0, 0]
                         # Process current image sent to FEAGI with bounding box
                         location_data = pns.recognize_location_data(message_from_feagi)
                         if pns.full_list_dimension:
