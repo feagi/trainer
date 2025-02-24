@@ -127,6 +127,7 @@ if __name__ == "__main__":
     image_reader_config["loop"] = latest_vals.loop
     image_obj = feagi_trainer.scan_the_folder(image_reader_config["image_path"])
     latest_image_id = None
+    aspect_data = ""
 
     while True:
         message_from_feagi = pns.message_from_feagi
@@ -345,8 +346,6 @@ if __name__ == "__main__":
                         image_reader_config["test_mode"] = latest_vals.test_mode
                         image_reader_config["image_gap_duration"] = (latest_vals.image_gap_duration)
                         image_reader_config['show_feagi_reading'] = latest_vals.show_feagi_reading
-                        aspect_data = str(Fraction(raw_frame.shape[0]/raw_frame.shape[1])).split('/')
-                        flask_server.latest_static.aspect_ratio = "ASPECT RATIO: " + str(aspect_data[1]) + "/" + str(aspect_data[0])
                         # image_reader_config["feagi_controlled"] = latest_vals.feagi_controlled # this is fraud AI. we dont do it here
                         if latest_vals.feagi_controlled:
                             break
@@ -400,6 +399,13 @@ if __name__ == "__main__":
                             o_loc = pns.full_list_dimension.get("o__loc")
                             if o_loc:
                                 size_of_cortical = o_loc["cortical_dimensions"]
+                        if "00_C" in modified_data:
+                            if len(modified_data['00_C']) > 0:
+                                if raw_frame.shape[0] / raw_frame.shape[1] != modified_data['00_C'].shape[0] / modified_data['00_C'].shape[1]:
+                                    if flask_server.latest_static.aspect_ratio != "aspect ratio mistached":
+                                        flask_server.latest_static.aspect_ratio = "aspect ratio mistached"
+
+
 
                         # Add image's dimensions to HTML display data
                         if previous_frame_data:

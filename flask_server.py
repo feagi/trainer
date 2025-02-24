@@ -117,7 +117,8 @@ def index():
             </style>
         </head>
         <body>
-            <h1 style="text-align: center; color: lightgrey;">FEAGI Trainer</h1>
+            <h1 style="text-align: center; color: lightgrey;">FEAGI Trainer {{ aspect_ratio_calculator }}</h1>
+            <h1 style="text-align: center; color: lightgrey;"><span id="aspect_ratio_calculator">{{ aspect_ratio_calculator }}</span></h1>
             <div style="display: flex; gap: 20px;">
                 <div class="stats-inputs-parent">
                     <div class="stats-container info-container">
@@ -215,6 +216,7 @@ def index():
                             document.getElementById('feagi-image-id').innerText = data.feagi_image_id || "N/A";
                             document.getElementById('correct-count').innerText = data.correct_count !== undefined ? data.correct_count : '?';
                             document.getElementById('incorrect-count').innerText = data.incorrect_count !== undefined ? data.incorrect_count : '?';
+                            document.getElementById('aspect_ratio_calculator').innerText = data.aspect_ratio !== undefined ? data.aspect_ratio : '?';
                             document.getElementById('no-reply-count').innerText = data.no_reply_count !== undefined ? data.no_reply_count : '?';
                             document.getElementById('image-dimensions').innerText = data.image_dimensions || "N/A";
                             document.getElementById('raw-image-dimensions').innerText = data.raw_image_dimensions || "N/A";
@@ -342,6 +344,7 @@ def index():
         feagi_image_id=latest_static.feagi_image_id,
         correct_count=latest_static.correct_count,
         incorrect_count=latest_static.incorrect_count,
+        aspect_ratio=latest_static.aspect_ratio,
         no_reply_count=latest_static.no_reply_count,
         image_dimensions=latest_static.image_dimensions,
         raw_image_dimensions=latest_static.raw_image_dimensions,
