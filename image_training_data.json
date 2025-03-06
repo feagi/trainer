@@ -5,5 +5,6 @@
   "incorrect_count": 0,
   "no_reply_count": 0,
   "last_image_time": null,
-  "last_feagi_time": null
+  "last_feagi_time": null,
+  "aspect_ratio": "aspect ratio is matched"
 }
