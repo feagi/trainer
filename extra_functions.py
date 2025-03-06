@@ -26,7 +26,7 @@ def expand_pixel(xyz_array, radius, width, height):
     new_coords = expanded[:, :, :2] + offsets[np.newaxis, :, :]  # Add offsets to x,y coordinates
 
     # Clip to image boundaries
-    new_coords[:, :, 0] = np.clip(new_coords[:, :, 0], 0, width) + 10
+    new_coords[:, :, 0] = np.clip(new_coords[:, :, 0], 0, width)
     new_coords[:, :, 1] = np.clip(new_coords[:, :, 1], 0, height)
 
     # If there's a third column (e.g., intensity), repeat it for all expanded pixels
