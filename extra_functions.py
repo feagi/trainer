@@ -68,6 +68,11 @@ def check_the_flag():
         default=[0, 10],
         help="define the min and max range"
     )
+    parser.add_argument(
+        "--csv_path",
+        type=str,
+        help="path to csv file"
+    )
 
     args, remaining_args = parser.parse_known_args()
     csv_flag = args.csv
@@ -86,4 +91,4 @@ def check_the_flag():
                 skip_next = True
 
     sys.argv = [sys.argv[0]] + cleaned_args
-    return csv_flag, range_value
+    return csv_flag, range_value, args.csv_path

@@ -40,7 +40,7 @@ import numpy as np
 from fractions import Fraction
 
 
-csv_flag, csv_range = extra_functions.check_the_flag()
+csv_flag, csv_range, csv_path = extra_functions.check_the_flag()
 config = feagi.build_up_from_configuration()
 capabilities = config["capabilities"].copy()
 fcap = open('configuration.json')
@@ -136,7 +136,7 @@ if __name__ == "__main__":
     aspect_data = ""
 
     if csv_flag:
-        with open('iris2.csv', 'r') as csvfile:
+        with open(csv_path, 'r') as csvfile:
             data = list(csv.reader(csvfile))
 
         while True:
