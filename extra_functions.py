@@ -57,11 +57,6 @@ def expand_pixel(xyz_array, radius, width, height):
 def check_the_flag():
     parser = argparse.ArgumentParser(description="read csv")
     parser.add_argument(
-        "--csv",
-        type=bool,
-        help="read csv file"
-    )
-    parser.add_argument(
         "--csv_data_range",
         type=int,
         nargs=2,
@@ -75,7 +70,10 @@ def check_the_flag():
     )
 
     args, remaining_args = parser.parse_known_args()
-    csv_flag = args.csv
+    if args.csv_path:
+        csv_flag = True
+    else:
+        csv_flag = False
     range_value = list(args.csv_data_range)
     available_list_from_feagi_connector = feagi.get_flag_list()
     cleaned_args = []
