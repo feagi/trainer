@@ -9,10 +9,10 @@ In CMD/Terminal, run:
 5. Once the venv is activated, run:
    - Linux / Mac:
      1. `pip3 install -r requirements.txt`
-     2. `python3 controller.py --magic_link "<insert link here>" (replace <insert link here> without removing the quotes in the command).`
+     2. `python3 controller.py --API_KEY "<insert link here>" (replace <insert link here> without removing the quotes in the command).`
    - Windows:
      1. `pip install -r requirements.txt`
-     2. `python controller.py --magic_link "<insert link here>" (replace <insert link here> without removing the quotes in the command).`
+     2. `python controller.py --API_KEY "<insert link here>" (replace <insert link here> without removing the quotes in the command).`
 
 At this point, the websocket should be successfully connected. You should see a log of the websocket URL (`wss:// . . .`), with no errors following.
 
@@ -20,7 +20,7 @@ At this point, the websocket should be successfully connected. You should see a 
 
 1. Python version 3.8+
 2. Pip version 21+ (?)
-3. Magic link (get from /brain-visualizer on NRS under main nav Embodiment -> Magic Link)
+3. api key (get from /brain-visualizer on NeuroRobotics Studiounder main nav Embodiment -> Magic Link)
 4. Command Prompt (CMD) or PowerShell (Windows) / Terminal (Mac or Linux)
 5. Git (https://git-scm.com/downloads for Windows. Mac and Linux should have it by default)
 
@@ -56,14 +56,14 @@ Example command: `python controller.py --help`
 optional arguments:
   -h, --help            Show this help message and exit.
   
-  -magic_link MAGIC_LINK, --magic_link MAGIC_LINK
-                        Use a magic link. You can find your magic link from NRS studio.
+  -API_KEY API_KEY, --API_KEY API_KEY
+                        Use a magic link. You can find your api key from NeuroRobotics studio.
                         
-  -magic-link MAGIC_LINK, --magic-link MAGIC_LINK
-                        Use a magic link. You can find your magic link from NRS studio.
+  -api_key API_KEY, --api_key API_KEY
+                        Use a magic link. You can find your api key from NeuroRobotics studio.
                         
   -magic MAGIC, --magic MAGIC
-                        Use a magic link. You can find your magic link from NRS studio.
+                        Use a magic link. You can find your api key from NeuroRobotics studio.
                         
   -ip IP, --ip IP       Specify the FEAGI IP address.
   
