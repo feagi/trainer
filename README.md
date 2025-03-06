@@ -69,6 +69,12 @@ optional arguments:
   
   -port PORT, --port PORT
                         Change the ZMQ port. Use 30000 for Docker and 3000 for localhost.
+                        
+  --csv_data_range  
+                        Defines the minimum and maximum values of the data. Example: --csv_data_range -5 10. Default: 0 10
+
+  --csv_path  
+                        Specifies the path to the CSV file. Example: --csv_path my_vision_data.csv
 
 ```
 
