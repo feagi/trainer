@@ -57,13 +57,7 @@ optional arguments:
   -h, --help            Show this help message and exit.
   
   -API_KEY API_KEY, --API_KEY API_KEY
-                        Use a magic link. You can find your api key from NeuroRobotics studio.
-                        
-  -api_key API_KEY, --api_key API_KEY
-                        Use a magic link. You can find your api key from NeuroRobotics studio.
-                        
-  -magic MAGIC, --magic MAGIC
-                        Use a magic link. You can find your api key from NeuroRobotics studio.
+                        Use an api key. You can find your api key from NeuroRobotics studio website.
                         
   -ip IP, --ip IP       Specify the FEAGI IP address.
   
