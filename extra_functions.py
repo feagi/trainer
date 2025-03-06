@@ -70,6 +70,7 @@ def check_the_flag():
     )
 
     args, remaining_args = parser.parse_known_args()
+    print(args, " and ", remaining_args)
     if args.csv_path:
         csv_flag = True
     else:
@@ -88,5 +89,5 @@ def check_the_flag():
                 cleaned_args.append(sys.argv[1:][i + 1])
                 skip_next = True
 
-    sys.argv = [sys.argv[0]] + cleaned_args
+    sys.argv = [sys.argv[0]] + remaining_args
     return csv_flag, range_value, args.csv_path
