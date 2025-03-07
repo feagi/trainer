@@ -9,10 +9,10 @@ In CMD/Terminal, run:
 5. Once the venv is activated, run:
    - Linux / Mac:
      1. `pip3 install -r requirements.txt`
-     2. `python3 controller.py --API_KEY "<insert link here>" (replace <insert link here> without removing the quotes in the command).`
+     2. `python3 controller.py --api_key "<insert link here>" (replace <insert link here> without removing the quotes in the command).`
    - Windows:
      1. `pip install -r requirements.txt`
-     2. `python controller.py --API_KEY "<insert link here>" (replace <insert link here> without removing the quotes in the command).`
+     2. `python controller.py --api_key "<insert link here>" (replace <insert link here> without removing the quotes in the command).`
 
 At this point, the websocket should be successfully connected. You should see a log of the websocket URL (`wss:// . . .`), with no errors following.
 
@@ -56,7 +56,7 @@ Example command: `python controller.py --help`
 optional arguments:
   -h, --help            Show this help message and exit.
   
-  -API_KEY API_KEY, --API_KEY API_KEY
+  -api_key API_KEY, --api_key API_KEY
                         Use an api key. You can find your api key from NeuroRobotics studio website.
                         
   -ip IP, --ip IP       Specify the FEAGI IP address.
