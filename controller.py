@@ -139,6 +139,7 @@ if __name__ == "__main__":
         with open(csv_path, 'r') as csvfile:
             data = list(csv.reader(csvfile))
 
+        total = 1
         while True:
             for element in data:
                 latest_vals = flask_server.latest_static
@@ -147,6 +148,8 @@ if __name__ == "__main__":
                 image_reader_config["image_gap_duration"] = (latest_vals.image_gap_duration)
                 image_reader_config['show_feagi_reading'] = latest_vals.show_feagi_reading
                 if testing_mode_flag != 'true':
+                    print("Fitness : ", (latest_vals.correct_count / total * 100), " Total: ", total, " Correct: ",
+                          latest_vals.correct_count, " Wrong: ", latest_vals.incorrect_count)
                     name_id = (0,int(element[0]),0)
                     message_to_feagi = feagi_trainer.id_training_with_image(message_to_feagi, {name_id:100})
                 misc_data = {'i_misc': {}}
@@ -158,6 +161,7 @@ if __name__ == "__main__":
                 message_to_feagi = sensors.add_generic_input_to_feagi_data(misc_data, message_to_feagi)
                 while float(stimulation_period) >= (datetime.now() - start_timer).total_seconds():
                     pns.signals_to_feagi(message_to_feagi, feagi_ipu_channel, agent_settings, feagi_settings)
+                total += 1
                 sleep(stimulation_gap)
                 message_to_feagi.clear()
 
