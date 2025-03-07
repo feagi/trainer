@@ -96,3 +96,8 @@ To fix this, follow these steps:
 # How to Use
 TODO: Add text describing the folowing image in detail
 <img width="1100" alt="image" src="https://github.com/user-attachments/assets/51ba52cd-ee9c-4560-84da-b979c96206a3">
+
+
+https://github.com/user-attachments/assets/074b0431-be0a-4e5e-862e-afd9e4860028
+
+
