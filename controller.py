@@ -23,7 +23,7 @@ import copy
 import threading
 import flask_server
 import argparse
-from time import sleep
+from time import sleep, time
 from process_image import *
 from datetime import datetime
 from feagi_connector import retina
@@ -40,7 +40,7 @@ import numpy as np
 from fractions import Fraction
 
 
-csv_flag, csv_range, csv_path, stimulation_period, stimulation_gap, testing_mode_flag = extra_functions.check_the_flag()
+csv_flag, csv_range, csv_path, stimulation_period, stimulation_gap, test_mode = extra_functions.check_the_flag()
 config = feagi.build_up_from_configuration()
 capabilities = config["capabilities"].copy()
 fcap = open('configuration.json')
@@ -147,25 +147,23 @@ if __name__ == "__main__":
                 image_reader_config["test_mode"] = latest_vals.test_mode
                 image_reader_config["image_gap_duration"] = (latest_vals.image_gap_duration)
                 image_reader_config['show_feagi_reading'] = latest_vals.show_feagi_reading
-                if testing_mode_flag != 'true':
+                if test_mode:
                     print("Fitness : ", (latest_vals.correct_count / total * 100), " Total: ", total, " Correct: ",
                           latest_vals.correct_count, " Wrong: ", latest_vals.incorrect_count)
-                    name_id = (0,int(element[0]),0)
+                    name_id = (0, int(element[0]), 0)
                     message_to_feagi = feagi_trainer.id_training_with_image(message_to_feagi, {name_id:100})
                 misc_data = {'i_misc': {}}
                 full_element = element[1:]
                 for index in range(len(element[1:])):
                     misc_name_id = sensors.convert_sensor_to_ipu_data(csv_range[0], csv_range[1], float(full_element[index]), index, 'miscellaneous')
                     misc_data['i_misc'][misc_name_id] = 100
-                start_timer = datetime.now()
+                start_timer = time()
                 message_to_feagi = sensors.add_generic_input_to_feagi_data(misc_data, message_to_feagi)
-                while float(stimulation_period) >= (datetime.now() - start_timer).total_seconds():
+                while float(stimulation_period) >= (time() - start_timer):
                     pns.signals_to_feagi(message_to_feagi, feagi_ipu_channel, agent_settings, feagi_settings)
                 total += 1
                 sleep(stimulation_gap)
                 message_to_feagi.clear()
-
-
 
     else:
         while True:

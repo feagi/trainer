@@ -70,20 +70,19 @@ def check_the_flag():
     )
     parser.add_argument(
         "--stimulation_period",
-        type=int,
+        type=float,
         default=1,
         help="for how long it stays display the voxel"
     )
     parser.add_argument(
         "--stimulation_gap",
-        type=int,
+        type=float,
         default=0,
         help="for how long gap between 2 rows of data"
     )
     parser.add_argument(
         "--test",
-        type=str,
-        default='false',
+        action="store_true",
         help="Enable testing mode and it will disable trainer ID"
     )
 
