@@ -40,7 +40,7 @@ import numpy as np
 from fractions import Fraction
 
 
-csv_flag, csv_range, csv_path, stimulation_period, stimulation_gap = extra_functions.check_the_flag()
+csv_flag, csv_range, csv_path, stimulation_period, stimulation_gap, testing_mode_flag = extra_functions.check_the_flag()
 config = feagi.build_up_from_configuration()
 capabilities = config["capabilities"].copy()
 fcap = open('configuration.json')
@@ -140,18 +140,15 @@ if __name__ == "__main__":
             data = list(csv.reader(csvfile))
 
         while True:
-            for element in data: # read csv each row
-                # Apply any browser UI user changes to config data
+            for element in data:
                 latest_vals = flask_server.latest_static
                 image_reader_config["image_display_duration"] = (latest_vals.image_display_duration)
                 image_reader_config["test_mode"] = latest_vals.test_mode
                 image_reader_config["image_gap_duration"] = (latest_vals.image_gap_duration)
                 image_reader_config['show_feagi_reading'] = latest_vals.show_feagi_reading
-                # this is a thing for flask that I copuied from kat work
-
-
-                name_id = (0,int(element[0]),0)
-                message_to_feagi = feagi_trainer.id_training_with_image(message_to_feagi, {name_id:100})
+                if testing_mode_flag != 'true':
+                    name_id = (0,int(element[0]),0)
+                    message_to_feagi = feagi_trainer.id_training_with_image(message_to_feagi, {name_id:100})
                 misc_data = {'i_misc': {}}
                 full_element = element[1:]
                 for index in range(len(element[1:])):

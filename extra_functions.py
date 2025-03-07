@@ -80,6 +80,12 @@ def check_the_flag():
         default=0,
         help="for how long gap between 2 rows of data"
     )
+    parser.add_argument(
+        "--test",
+        type=str,
+        default='false',
+        help="Enable testing mode and it will disable trainer ID"
+    )
 
     args, remaining_args = parser.parse_known_args()
     if args.csv_path:
@@ -101,4 +107,4 @@ def check_the_flag():
                 skip_next = True
 
     sys.argv = [sys.argv[0]] + remaining_args
-    return csv_flag, range_value, args.csv_path, args.stimulation_period, args.stimulation_gap
+    return csv_flag, range_value, args.csv_path, args.stimulation_period, args.stimulation_gap, args.test
