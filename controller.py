@@ -147,9 +147,10 @@ if __name__ == "__main__":
                 image_reader_config["test_mode"] = latest_vals.test_mode
                 image_reader_config["image_gap_duration"] = (latest_vals.image_gap_duration)
                 image_reader_config['show_feagi_reading'] = latest_vals.show_feagi_reading
-                if not test_mode:
+                if test_mode:
                     print("Fitness : ", (latest_vals.correct_count / total * 100), " Total: ", total, " Correct: ",
                           latest_vals.correct_count, " Wrong: ", latest_vals.incorrect_count)
+                else:
                     name_id = (0, int(element[0]), 0)
                     message_to_feagi = feagi_trainer.id_training_with_image(message_to_feagi, {name_id:100})
                 misc_data = {'i_misc': {}}
