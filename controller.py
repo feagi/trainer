@@ -23,7 +23,7 @@ import copy
 import threading
 import flask_server
 import argparse
-from time import sleep
+from time import sleep, time
 from process_image import *
 from datetime import datetime
 from feagi_connector import retina
@@ -40,7 +40,7 @@ import numpy as np
 from fractions import Fraction
 
 
-csv_flag, csv_range, csv_path = extra_functions.check_the_flag()
+csv_flag, csv_range, csv_path, stimulation_period, stimulation_gap, test_mode = extra_functions.check_the_flag()
 config = feagi.build_up_from_configuration()
 capabilities = config["capabilities"].copy()
 fcap = open('configuration.json')
@@ -135,25 +135,76 @@ if __name__ == "__main__":
     latest_image_id = None
     aspect_data = ""
 
+    stats = {
+        "total": 0,
+        "correct": 0,
+        "incorrect": 0,
+        "no_response": 0,
+        "fitness": 100
+    }
+
     if csv_flag:
         with open(csv_path, 'r') as csvfile:
             data = list(csv.reader(csvfile))
 
-        while True:
+        epoch_total = 1
+        for epoch in range(epoch_total):
+            epoch_initiation_time = time()
+            recognized_element = None
             for element in data:
-                name_id = (0,int(element[0]),0)
-                message_to_feagi = feagi_trainer.id_training_with_image(message_to_feagi, {name_id:100})
+
+                introduced_element = None
+
+                elapsed_time = time() - epoch_initiation_time
+                mins, secs = divmod(int(elapsed_time), 60)  # Convert to minutes and seconds
+                hours, mins = divmod(mins, 60)
+
+                message_from_feagi = pns.message_from_feagi
+                stats["total"] += 1
+                print(f"\rEpoch {epoch} initiated -- {hours:02}:{mins:02}:{secs:02}", stats["total"],
+                      "-" * 20, end="", flush=True)
                 misc_data = {'i_misc': {}}
                 full_element = element[1:]
                 for index in range(len(element[1:])):
-                    misc_name_id = sensors.convert_sensor_to_ipu_data(csv_range[0], csv_range[1], float(full_element[index]), index, 'miscellaneous')
+                    misc_name_id = sensors.convert_sensor_to_ipu_data(csv_range[0], csv_range[1],
+                                                                      float(full_element[index]),
+                                                                      index, 'miscellaneous')
                     misc_data['i_misc'][misc_name_id] = 100
+                start_timer = time()
                 message_to_feagi = sensors.add_generic_input_to_feagi_data(misc_data, message_to_feagi)
-                pns.signals_to_feagi(message_to_feagi, feagi_ipu_channel, agent_settings, feagi_settings)
+                while float(stimulation_period) >= (time() - start_timer):
+                    pns.signals_to_feagi(message_to_feagi, feagi_ipu_channel, agent_settings, feagi_settings)
+
                 message_to_feagi.clear()
-                sleep(feagi_settings['feagi_burst_speed'])
 
+                opu_data = message_from_feagi.get("opu_data")
+                if opu_data:
+                    recognized_element = opu_data.get("o___id")
+                    print(recognized_element)
+                    if recognized_element:
+                        recognized_element = next(iter(recognized_element))
+                        introduced_element = (0, int(element[0]), 0)
 
+                if test_mode:
+                    if recognized_element and introduced_element:
+                        if recognized_element == introduced_element:
+                            stats["correct"] += 1
+                        else:
+                            stats["incorrect"] += 1
+                    else:
+                        stats["no_response"] += 1
+
+                    stats["fitness"] = stats["correct"] / stats["total"] * 100
+                    print(stats)
+                else:
+                    name_id = (0, int(element[0]), 0)
+                    message_to_feagi = feagi_trainer.id_training_with_image(message_to_feagi, {name_id: 100})
+
+                sleep(stimulation_gap)
+            epoch_duration = time() - epoch_initiation_time
+            print(f"\nEpoch {epoch} completed after {int(epoch_duration)} seconds", "-" * 5, "\n")
+
+        sys.exit(0)
 
     else:
         while True:
@@ -213,10 +264,11 @@ if __name__ == "__main__":
                             if 'opu_data' in message_from_feagi:
                                 recognition_id = pns.detect_ID_data(message_from_feagi)
                                 if recognition_id:
-                                    name_id = recognition_id
-                                    for i in name_id:
-                                        feagi_image_id = i
-                                        break
+                                    # Extract the tuple (0, 0, 0) from {'o___id': {(0, 0, 0): 1.0}}
+                                    inner_dict = recognition_id.get('o___id', {})
+                                    # Get the first key from the inner dictionary (which is the tuple we want)
+                                    feagi_image_id = next(iter(inner_dict.keys())) if inner_dict else None
+                                    print("Extracted ID:", feagi_image_id)
                                     flask_server.latest_static = img_coords.update_image_ids(new_image_id=None,
                                                                                              new_feagi_image_id=feagi_image_id,
                                                                                              static=flask_server.latest_static)
@@ -275,10 +327,11 @@ if __name__ == "__main__":
                     if 'opu_data' in message_from_feagi:
                         recognition_id = pns.detect_ID_data(message_from_feagi)
                         if recognition_id:
-                            name_id = recognition_id
-                            for i in name_id:
-                                feagi_image_id = i
-                                break
+                            # Extract the tuple (0, 0, 0) from {'o___id': {(0, 0, 0): 1.0}}
+                            inner_dict = recognition_id.get('o___id', {})
+                            # Get the first key from the inner dictionary (which is the tuple we want)
+                            feagi_image_id = next(iter(inner_dict.keys())) if inner_dict else None
+                            print("Extracted ID:", feagi_image_id)
                             flask_server.latest_static = img_coords.update_image_ids(new_image_id=None,
                                                                                      new_feagi_image_id=feagi_image_id,
                                                                                      static=flask_server.latest_static)
@@ -394,7 +447,11 @@ if __name__ == "__main__":
                             if "opu_data" in message_from_feagi:
                                 recognition_id = pns.detect_ID_data(message_from_feagi)
                                 if recognition_id:
-                                    feagi_image_id = key = next(iter(recognition_id))
+                                    # Extract the tuple (0, 0, 0) from {'o___id': {(0, 0, 0): 1.0}}
+                                    inner_dict = recognition_id.get('o___id', {})
+                                    # Get the first key from the inner dictionary (which is the tuple we want)
+                                    feagi_image_id = next(iter(inner_dict.keys())) if inner_dict else None
+                                    print("Extracted ID:", feagi_image_id)
                                     flask_server.latest_static = img_coords.update_image_ids(
                                         new_image_id=None,
                                         new_feagi_image_id=feagi_image_id,
@@ -529,7 +586,11 @@ if __name__ == "__main__":
                             if "opu_data" in message_from_feagi:
                                 recognition_id = pns.detect_ID_data(message_from_feagi)
                                 if recognition_id:
-                                    feagi_image_id = key = next(iter(recognition_id))
+                                    # Extract the tuple (0, 0, 0) from {'o___id': {(0, 0, 0): 1.0}}
+                                    inner_dict = recognition_id.get('o___id', {})
+                                    # Get the first key from the inner dictionary (which is the tuple we want)
+                                    feagi_image_id = next(iter(inner_dict.keys())) if inner_dict else None
+                                    print("Extracted ID:", feagi_image_id)
                                     flask_server.latest_static = img_coords.update_image_ids(
                                         new_image_id=None,
                                         new_feagi_image_id=feagi_image_id,

@@ -68,9 +68,25 @@ def check_the_flag():
         type=str,
         help="path to csv file"
     )
+    parser.add_argument(
+        "--stimulation_period",
+        type=float,
+        default=1,
+        help="for how long it stays display the voxel"
+    )
+    parser.add_argument(
+        "--stimulation_gap",
+        type=float,
+        default=0,
+        help="for how long gap between 2 rows of data"
+    )
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Enable testing mode and it will disable trainer ID"
+    )
 
     args, remaining_args = parser.parse_known_args()
-    print(args, " and ", remaining_args)
     if args.csv_path:
         csv_flag = True
     else:
@@ -90,4 +106,4 @@ def check_the_flag():
                 skip_next = True
 
     sys.argv = [sys.argv[0]] + remaining_args
-    return csv_flag, range_value, args.csv_path
+    return csv_flag, range_value, args.csv_path, args.stimulation_period, args.stimulation_gap, args.test
