@@ -2,8 +2,8 @@
 
 In CMD/Terminal, run:
 
-1. `git clone https://github.com/feagi/controllers.git`
-2. `cd controllers/embodiments/neuraville/feagi_trainer`
+1. `git clone https://github.com/feagi/trainer.git`
+2. `cd trainer`
 3. `python3 -m venv venv` (for Windows, `python -m venv venv`)
 4. `source venv/bin/activate`
 5. Once the venv is activated, run:
