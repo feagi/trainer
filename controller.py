@@ -194,7 +194,7 @@ if __name__ == "__main__":
                     else:
                         stats["no_response"] += 1
 
-                    stats["fitness"] = stats["correct"] / stats["total"] * 100
+                    stats["fitness"] = round(stats["correct"] / stats["total"] * 100, 2)
                     print(stats)
                 else:
                     name_id = (0, int(element[0]), 0)
