@@ -38,6 +38,7 @@ import extra_functions
 from color_map import z_to_color
 import numpy as np
 from fractions import Fraction
+import cv2
 
 
 csv_flag, csv_range, csv_path, stimulation_period, stimulation_gap, test_mode = extra_functions.check_the_flag()
@@ -243,6 +244,15 @@ if __name__ == "__main__":
                 else:
                     if information_files[0][2] in feagi_trainer.video_extensions:
                         cap = information_files[0][0]
+                        
+                        # Get the video's native FPS
+                        video_fps = cap.get(cv2.CAP_PROP_FPS)
+                        if video_fps > 0:
+                            flask_server.latest_static.fps = round(video_fps, 1)
+                            print(f"Video FPS: {flask_server.latest_static.fps}")
+                        
+                        # check, raw_frame = new_cam.read() # webcam
+                        raw_frame = cap.read()[1]
                         while cap.isOpened():
                             if not latest_vals.feagi_controlled:
                                 break
@@ -388,6 +398,13 @@ if __name__ == "__main__":
                     extension = image[2]
                     if extension in feagi_trainer.video_extensions:
                         cap = image[0]
+                        
+                        # Get the video's native FPS
+                        video_fps = cap.get(cv2.CAP_PROP_FPS)
+                        if video_fps > 0:
+                            flask_server.latest_static.fps = round(video_fps, 1)
+                            print(f"Video FPS: {flask_server.latest_static.fps}")
+                        
                         # check, raw_frame = new_cam.read() # webcam
                         raw_frame = cap.read()[1]
 

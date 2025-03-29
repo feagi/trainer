@@ -20,6 +20,7 @@ class LatestStatic(BaseModel):
     image_gap_duration: Optional[float] = None
     show_feagi_reading: Optional[bool] = None
     aspect_ratio: Optional[str] = ""
+    fps: Optional[float] = None
 
 
 empty_latest_static = LatestStatic(
@@ -39,5 +40,6 @@ empty_latest_static = LatestStatic(
     image_path=None,
     test_mode=None,
     show_feagi_reading=None,
-    aspect_ratio=None
+    aspect_ratio=None,
+    fps=None
 )

@@ -176,13 +176,13 @@ def index():
                     <h3>FEAGI Guess: <span id="feagi-image-id">{{ feagi_image_id }}</span></h3>
                     <div style="display: flex; align-items: flex-end; gap: 10px;">
                         <div class="image-hider">
-                            <h3 style="text-align: center; color: white;">Image FEAGI Sees <span id="image-dimensions">{{ image_width }} x {{ image_height }}</span></h3>
+                            <h3 style="text-align: center; color: white;">Image FEAGI Sees <span id="image-dimensions">{{ image_dimensions }}</span><span id="fps-display" style="color: #4CAF50; font-weight: bold;">{% if fps %} @ {{ fps }} FPS{% endif %}</span></h3>
                             <div id="image-parent" style="width: 100%; display: flex; justify-content: center;">  
                                 <img src="{{ url_for('video_feed') }}" alt="video feed"/> 
                             </div>
                         </div>
                         <div class="image-hider">
-                            <h3 style="text-align: center; color: white;">Actual Image <span id="raw-image-dimensions">{{ raw_image_width }} x {{ raw_image_height }}</span></h3>
+                            <h3 style="text-align: center; color: white;">Actual Image <span id="raw-image-dimensions">{{ raw_image_dimensions }}</span><span id="raw-fps-display" style="color: #4CAF50; font-weight: bold;">{% if fps %} @ {{ fps }} FPS{% endif %}</span></h3>
                             <div id="raw-image-parent" style="width: 100%; display: flex; justify-content: center;">  
                                 <img src="{{ url_for('raw_frame_feed') }}" alt="raw frame"/> 
                             </div>
@@ -220,6 +220,28 @@ def index():
                             document.getElementById('no-reply-count').innerText = data.no_reply_count !== undefined ? data.no_reply_count : '?';
                             document.getElementById('image-dimensions').innerText = data.image_dimensions || "N/A";
                             document.getElementById('raw-image-dimensions').innerText = data.raw_image_dimensions || "N/A";
+                            
+                            // Add FPS display next to dimensions if available
+                            const fpsDisplay = document.getElementById('fps-display');
+                            const rawFpsDisplay = document.getElementById('raw-fps-display');
+                            if (data.fps) {
+                                if (fpsDisplay) {
+                                    fpsDisplay.innerText = ` @ ${data.fps} FPS`;
+                                    fpsDisplay.style.display = 'inline';
+                                }
+                                if (rawFpsDisplay) {
+                                    rawFpsDisplay.innerText = ` @ ${data.fps} FPS`;
+                                    rawFpsDisplay.style.display = 'inline';
+                                }
+                            } else {
+                                if (fpsDisplay) {
+                                    fpsDisplay.style.display = 'none';
+                                }
+                                if (rawFpsDisplay) {
+                                    rawFpsDisplay.style.display = 'none';
+                                }
+                            }
+                            
                             const total = data.correct_count + data.incorrect_count + data.no_reply_count;
                             const percentCorrect = total === 0 ? 0 : data.correct_count ? (data.correct_count / total) * 100 : "?";
                             document.getElementById('fitness-percent').innerText = isFinite(percentCorrect) ? `${percentCorrect.toFixed(2)}%` : "N/A";
@@ -348,6 +370,7 @@ def index():
         no_reply_count=latest_static.no_reply_count,
         image_dimensions=latest_static.image_dimensions,
         raw_image_dimensions=latest_static.raw_image_dimensions,
+        fps=latest_static.fps,
         feagi_controlled="checked" if latest_static.feagi_controlled else "",
         image_display_duration=latest_static.image_display_duration,
         image_gap_duration=latest_static.image_gap_duration,
