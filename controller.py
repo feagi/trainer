@@ -250,6 +250,15 @@ if __name__ == "__main__":
                         if video_fps > 0:
                             flask_server.latest_static.fps = round(video_fps, 1)
                             print(f"Video FPS: {flask_server.latest_static.fps}")
+                            
+                            # Calculate frame duration in seconds (for timing control)
+                            frame_duration = 1.0 / video_fps
+                        else:
+                            # Default to 30fps if we can't detect the FPS
+                            frame_duration = 1.0 / 30.0
+                            
+                        # Variables for timing control
+                        next_frame_time = time()
                         
                         # check, raw_frame = new_cam.read() # webcam
                         raw_frame = cap.read()[1]
@@ -404,6 +413,15 @@ if __name__ == "__main__":
                         if video_fps > 0:
                             flask_server.latest_static.fps = round(video_fps, 1)
                             print(f"Video FPS: {flask_server.latest_static.fps}")
+                            
+                            # Calculate frame duration in seconds (for timing control)
+                            frame_duration = 1.0 / video_fps
+                        else:
+                            # Default to 30fps if we can't detect the FPS
+                            frame_duration = 1.0 / 30.0
+                            
+                        # Variables for timing control
+                        next_frame_time = time()
                         
                         # check, raw_frame = new_cam.read() # webcam
                         raw_frame = cap.read()[1]
@@ -417,6 +435,16 @@ if __name__ == "__main__":
                         frame = []
                         while cap.isOpened():
                             message_from_feagi = pns.message_from_feagi
+                            
+                            # Time control - wait until it's time for the next frame
+                            current_time = time()
+                            sleep_time = max(0, next_frame_time - current_time)
+                            if sleep_time > 0:
+                                sleep(sleep_time)
+                            
+                            # Update next frame time
+                            next_frame_time = time() + frame_duration
+                            
                             ret, raw_frame = cap.read()
                             if ret:
                                 pass
